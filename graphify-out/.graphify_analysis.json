@@ -1,0 +1,266 @@
+{
+  "communities": {
+    "0": [
+      "src_core_blank",
+      "src_core_direction",
+      "src_main",
+      "src_main_attempts",
+      "src_main_bindglobal",
+      "src_main_boot",
+      "src_main_draft",
+      "src_main_ensurepracticeorder",
+      "src_main_escapehtml",
+      "src_main_icon",
+      "src_main_legalpage",
+      "src_main_offerupdate",
+      "src_main_practiceorder",
+      "src_main_previewmarkup",
+      "src_main_prompts",
+      "src_main_registerserviceworker",
+      "src_main_renderbanktools",
+      "src_main_renderemptystate",
+      "src_main_renderfeedback",
+      "src_main_renderpractice",
+      "src_main_renderprint",
+      "src_main_renderprivacy",
+      "src_main_renderpromptcard",
+      "src_main_renderterms",
+      "src_main_renderworkbench",
+      "src_main_route",
+      "src_main_updateconnection"
+    ],
+    "1": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_es2022",
+      "ref_playwright_config_ts",
+      "ref_src",
+      "ref_tests",
+      "ref_vite_config_ts",
+      "ref_webworker",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowimportingtsextensions",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduledetection",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_nouncheckedindexedaccess",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_compileroptions_usedefineforclassfields",
+      "tsconfig_include"
+    ],
+    "2": [
+      "axe_core",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_axe_core",
+      "package_devdependencies_playwright_test",
+      "package_devdependencies_typescript",
+      "package_devdependencies_vite",
+      "package_devdependencies_vitest",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_preview",
+      "package_scripts_test",
+      "package_scripts_test_e2e",
+      "package_type",
+      "package_version",
+      "playwright_test",
+      "typescript",
+      "vite",
+      "vitest"
+    ],
+    "3": [
+      "src_core_recentaccuracy",
+      "src_main_bindpractice",
+      "src_main_bindworkbench",
+      "src_main_checkanswer",
+      "src_main_currentroute",
+      "src_main_download",
+      "src_main_editprompt",
+      "src_main_emptydraft",
+      "src_main_exportjson",
+      "src_main_importjson",
+      "src_main_nextprompt",
+      "src_main_removeprompt",
+      "src_main_render",
+      "src_main_savedraft",
+      "src_main_shell",
+      "src_main_showtoast",
+      "src_main_undodelete"
+    ],
+    "4": [
+      "src_core",
+      "src_core_addblank",
+      "src_core_answersmatch",
+      "src_core_clozetext",
+      "src_core_isbackup",
+      "src_core_isprompt",
+      "src_core_normalizeanswer",
+      "src_core_prompt",
+      "src_core_sentenceparts",
+      "src_core_tocsv",
+      "tests_core_test",
+      "tests_core_test_prompt"
+    ],
+    "5": [
+      "src_core_attempt",
+      "src_core_backup",
+      "src_storage",
+      "src_storage_deleteprompt",
+      "src_storage_loadall",
+      "src_storage_opendb",
+      "src_storage_putattempt",
+      "src_storage_putprompt",
+      "src_storage_replacebackup",
+      "src_storage_requestresult",
+      "src_storage_transactiondone"
+    ],
+    "6": [
+      "public_sw",
+      "public_sw_app_shell"
+    ],
+    "7": [
+      "playwright_config"
+    ],
+    "8": [
+      "tests_e2e_app_spec"
+    ],
+    "9": [
+      "vite_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.14814814814814814,
+    "1": 0.08695652173913043,
+    "2": 0.09090909090909091,
+    "3": 0.23529411764705882,
+    "4": 0.3484848484848485,
+    "5": 0.38181818181818183,
+    "6": 1.0,
+    "7": 1.0,
+    "8": 1.0,
+    "9": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_main_render",
+      "label": "render()",
+      "degree": 19
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 13
+    },
+    {
+      "id": "src_main_bindworkbench",
+      "label": "bindWorkbench()",
+      "degree": 11
+    },
+    {
+      "id": "src_main_escapehtml",
+      "label": "escapeHtml()",
+      "degree": 9
+    },
+    {
+      "id": "src_main_showtoast",
+      "label": "showToast()",
+      "degree": 9
+    },
+    {
+      "id": "src_main_renderworkbench",
+      "label": "renderWorkbench()",
+      "degree": 7
+    },
+    {
+      "id": "src_main_removeprompt",
+      "label": "removePrompt()",
+      "degree": 7
+    },
+    {
+      "id": "src_main_importjson",
+      "label": "importJson()",
+      "degree": 7
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 6
+    },
+    {
+      "id": "src_core_answersmatch",
+      "label": "answersMatch()",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "checkAnswer()",
+      "target": "answersMatch()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "renderFeedback()",
+      "target": "answersMatch()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "bindWorkbench()",
+      "target": "addBlank()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "previewMarkup()",
+      "target": "sentenceParts()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "removePrompt()",
+      "target": "clozeText()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
