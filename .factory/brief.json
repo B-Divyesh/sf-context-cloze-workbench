@@ -1,0 +1,11 @@
+{
+  "slug": "context-cloze-workbench",
+  "title": "Context Cloze",
+  "territory": "utilities",
+  "user": "Vocabulary learners and teachers who need learners to retrieve a word from a meaningful sentence rather than recognize a card face.",
+  "smallest_useful_product": "A browser tool to paste a sentence, mark one or two blanks, attach a definition/note, and run typed-answer practice with printable and CSV export.",
+  "success_measure": "At least 40% of pilot authors create 20 sentence prompts and learners answer 70% of them in a second session seven days later.",
+  "artifact_class": "pwa-offline",
+  "monetization": "free",
+  "constraints": "No copyrighted corpus bundled; users provide sentences; support Unicode/RTL and keyboard input; do not collect student text."
+}
