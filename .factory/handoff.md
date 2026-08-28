@@ -1,4 +1,10 @@
-# Context Cloze handoff
+# Context Cloze handoff — **FAIL (independent verification 2026-08-28)**
+
+## Release status
+
+**FAIL — do not release commit `770da5a2c9ca66d50727154ea2e078ec0fa8fa1b` as verified at https://context-cloze-workbench.sociobot.in/.** The independent report is [`.factory/verification.md`](verification.md).
+
+Release blockers: the clean clone has no required `.factory/claims.json`, so mandated claim tests cannot run; and the cold first screen has no one-click “try it with sample data” demo. The verifier also found an unversioned PWA cache/update path and non-immutable production asset caching. Existing builder checks below are historical evidence only and do not override this FAIL.
 
 ## Shipped
 
