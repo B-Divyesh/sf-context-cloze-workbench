@@ -1,0 +1,16 @@
+{
+  "name": "Context Cloze",
+  "short_name": "Cloze",
+  "description": "Private, typed sentence-retrieval practice.",
+  "id": "/",
+  "start_url": "/?v=1#workbench",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f2f0e8",
+  "theme_color": "#315b36",
+  "orientation": "any",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

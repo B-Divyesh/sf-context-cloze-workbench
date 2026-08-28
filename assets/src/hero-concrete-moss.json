@@ -1,0 +1,8 @@
+{
+  "tool": "/opt/fleet/lib/gen-image.sh",
+  "deployment": "factory-image",
+  "date": "2026-08-28",
+  "size": "1536x1024",
+  "quality": "high",
+  "prompt": "Use case: stylized-concept. Asset type: compact onboarding and empty-state illustration for a vocabulary retrieval PWA. Scene: top-down raw board-formed concrete workbench. Subject: a shallow horizontal sentence-shaped groove made from abstract dark rectangular type blocks with no letters, with exactly two clean missing rectangular blocks; fine living forest moss emerges only from those two blanks. Add one small graphite pencil and one blank rough paper slip only as scale cues. Style: tactile editorial still life, restrained brutalism, photoreal material detail. Composition: wide landscape, orthographic top-down framing, uncluttered, generous concrete negative space around the subject, no border. Lighting: diffuse overcast studio light with firm tactile shadows. Palette: chalk concrete, charcoal ink, forest moss, pale lichen, tiny restrained rust accent. Constraints: no people, no hands, no readable text, no letters or symbols, no logos, no watermark, no UI screenshot, no glossy plastic, no neon, no gradients, no excessive objects."
+}

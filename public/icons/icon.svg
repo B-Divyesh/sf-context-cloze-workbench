@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Context Cloze mark">
+  <rect width="512" height="512" fill="#315b36"/>
+  <path fill="#f2f0e8" d="M70 130h372v72H70zm0 180h372v72H70z"/>
+  <path fill="#cbe0a8" d="M185 118h142v96H185zm-30 180h202v96H155z"/>
+  <path fill="#171c18" d="M213 146h86v40h-86zm-30 180h146v40H183z"/>
+</svg>
