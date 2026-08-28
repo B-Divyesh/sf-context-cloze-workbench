@@ -4,7 +4,7 @@
 
 Context Cloze v1 is a finished static, offline-first PWA for building and practicing context-rich typed vocabulary prompts. Authors can paste any Unicode sentence, select one or two non-overlapping blanks without markup, attach a note, set automatic/LTR/RTL direction, edit and search a durable local bank, and confirm or undo deletion. Learners get a shuffled prompt session, one input per blank, normalized case/punctuation-aware checking, answer comparison, persisted attempts, and recent accuracy.
 
-The bank supports CSV export, complete JSON backup/import, and a printable learner sheet plus answer key. Empty, no-results, validation, storage-error, offline, correct/incorrect, update-available, and practice-complete states are implemented. Data stays in IndexedDB; there is no backend, telemetry, account, or third-party runtime request. Privacy and terms are available at `#privacy` and `#terms`.
+The bank supports CSV export, complete JSON backup/import, and a printable learner sheet plus answer key. Empty, no-results, validation, storage-error, offline, correct/incorrect, update-available, and practice-complete states are implemented. Data stays in IndexedDB; there is no backend, telemetry, account, or third-party runtime request. Privacy and terms are available at `/privacy/` and `/terms/`.
 
 The custom brutalist concrete-and-moss visual system is documented in `.factory/design.md`. Its original generated empty-state illustration was reviewed for text, brand, anatomy, and seam artifacts; source prompt/provenance live in `assets/src/`, and the shipped responsive WebP files are 68 KB and 12 KB.
 

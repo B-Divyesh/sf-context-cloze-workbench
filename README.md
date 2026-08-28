@@ -44,4 +44,4 @@ The researched opportunity is in [`.factory/brief.json`](.factory/brief.json), t
 
 ## Privacy and license
 
-The in-app `#privacy` and `#terms` routes explain local storage and user responsibility for sentence rights. Context Cloze is released under the [MIT License](LICENSE).
+The `/privacy/` and `/terms/` pages explain local storage and user responsibility for sentence rights. Context Cloze is released under the [MIT License](LICENSE).

@@ -33,6 +33,10 @@ test('has no serious accessibility violations on the empty workbench', async ({ 
   const violations = await page.evaluate(async () => (await (window as typeof window & { axe: { run: () => Promise<{ violations: Array<{ impact: string | null; id: string }> }> } }).axe.run()).violations);
   const serious = violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
   expect(serious).toEqual([]);
+  await page.goto('/privacy/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your words stay yours.');
+  await page.goto('/terms/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('A small tool with plain terms.');
 });
 
 test('loads its application shell offline after the first visit', async ({ page, context }) => {

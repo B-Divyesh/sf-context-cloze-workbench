@@ -79,7 +79,7 @@ function shell(content: string): string {
     <main id="main" tabindex="-1">${content}</main>
     <footer>
       <p><strong>Private by design.</strong> Your sentences stay in this browser.</p>
-      <nav aria-label="Legal"><a href="#privacy">Privacy</a><a href="#terms">Terms</a></nav>
+      <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
       <p class="generated-note">Illustration generated for Context Cloze with the Param Factory image model.</p>
     </footer>
     <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>`;
@@ -356,11 +356,11 @@ async function saveDraft(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.currentTarget as HTMLFormElement;
   const data = new FormData(form);
-  const sentence = String(data.get('sentence') ?? '').trim();
+  const sentence = String(data.get('sentence') ?? '');
   const error = document.querySelector<HTMLParagraphElement>('#form-error')!;
-  if (!sentence) { error.textContent = 'Enter a sentence before saving.'; return; }
+  if (!sentence.trim()) { error.textContent = 'Enter a sentence before saving.'; return; }
   if (!draft.blanks.length) { error.textContent = 'Select at least one word or phrase and mark it as a blank.'; return; }
-  if (sentence !== draft.sentence.trim()) { error.textContent = 'The sentence changed. Mark its blank again before saving.'; return; }
+  if (sentence !== draft.sentence) { error.textContent = 'The sentence changed. Mark its blank again before saving.'; return; }
   const now = new Date().toISOString();
   const prompt: Prompt = {
     id: draft.id ?? crypto.randomUUID(), sentence, blanks: draft.blanks, note: String(data.get('note') ?? '').trim(),
