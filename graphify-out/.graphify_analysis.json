@@ -1,12 +1,10 @@
 {
   "communities": {
     "0": [
-      "src_core_blank",
-      "src_core_direction",
+      "src_core_recentaccuracy",
       "src_main",
       "src_main_attempts",
-      "src_main_bindglobal",
-      "src_main_boot",
+      "src_main_currentroute",
       "src_main_draft",
       "src_main_ensurepracticeorder",
       "src_main_escapehtml",
@@ -27,9 +25,37 @@
       "src_main_renderterms",
       "src_main_renderworkbench",
       "src_main_route",
-      "src_main_updateconnection"
+      "src_main_sample_backup",
+      "src_main_sampleprompt",
+      "src_main_shell"
     ],
     "1": [
+      "axe_core",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_axe_core",
+      "package_devdependencies_playwright_test",
+      "package_devdependencies_types_node",
+      "package_devdependencies_typescript",
+      "package_devdependencies_vite",
+      "package_devdependencies_vitest",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_preview",
+      "package_scripts_test",
+      "package_scripts_test_e2e",
+      "package_type",
+      "package_version",
+      "playwright_test",
+      "types_node",
+      "typescript",
+      "vite",
+      "vitest"
+    ],
+    "2": [
       "ref_dom",
       "ref_dom_iterable",
       "ref_es2022",
@@ -54,54 +80,40 @@
       "tsconfig_compileroptions_usedefineforclassfields",
       "tsconfig_include"
     ],
-    "2": [
-      "axe_core",
-      "package",
-      "package_devdependencies",
-      "package_devdependencies_axe_core",
-      "package_devdependencies_playwright_test",
-      "package_devdependencies_typescript",
-      "package_devdependencies_vite",
-      "package_devdependencies_vitest",
-      "package_name",
-      "package_private",
-      "package_scripts",
-      "package_scripts_build",
-      "package_scripts_dev",
-      "package_scripts_preview",
-      "package_scripts_test",
-      "package_scripts_test_e2e",
-      "package_type",
-      "package_version",
-      "playwright_test",
-      "typescript",
-      "vite",
-      "vitest"
-    ],
     "3": [
-      "src_core_recentaccuracy",
+      "src_main_bindglobal",
       "src_main_bindpractice",
       "src_main_bindworkbench",
+      "src_main_boot",
       "src_main_checkanswer",
-      "src_main_currentroute",
       "src_main_download",
       "src_main_editprompt",
       "src_main_emptydraft",
+      "src_main_enterdemo",
       "src_main_exportjson",
       "src_main_importjson",
+      "src_main_loadworkspace",
       "src_main_nextprompt",
+      "src_main_pagetitle",
       "src_main_removeprompt",
       "src_main_render",
+      "src_main_resetdemo",
       "src_main_savedraft",
-      "src_main_shell",
       "src_main_showtoast",
-      "src_main_undodelete"
+      "src_main_startforreal",
+      "src_main_storagenamespace",
+      "src_main_undodelete",
+      "src_main_updateconnection"
     ],
     "4": [
       "src_core",
       "src_core_addblank",
       "src_core_answersmatch",
+      "src_core_attempt",
+      "src_core_backup",
+      "src_core_blank",
       "src_core_clozetext",
+      "src_core_direction",
       "src_core_isbackup",
       "src_core_isprompt",
       "src_core_normalizeanswer",
@@ -112,9 +124,8 @@
       "tests_core_test_prompt"
     ],
     "5": [
-      "src_core_attempt",
-      "src_core_backup",
       "src_storage",
+      "src_storage_databasename",
       "src_storage_deleteprompt",
       "src_storage_loadall",
       "src_storage_opendb",
@@ -122,39 +133,58 @@
       "src_storage_putprompt",
       "src_storage_replacebackup",
       "src_storage_requestresult",
+      "src_storage_storagenamespace",
       "src_storage_transactiondone"
     ],
     "6": [
+      "vite_config",
+      "vite_config_buildid",
+      "vite_config_releasefiles",
+      "vite_config_releaseid"
+    ],
+    "7": [
+      "tests_release_files_test",
+      "tests_release_files_test_buildfor",
+      "tests_release_files_test_repo"
+    ],
+    "8": [
       "public_sw",
       "public_sw_app_shell"
     ],
-    "7": [
+    "9": [
+      "tests_e2e_claims_spec",
+      "tests_e2e_claims_spec_addprompt"
+    ],
+    "10": [
       "playwright_config"
     ],
-    "8": [
-      "tests_e2e_app_spec"
+    "11": [
+      "public_legal"
     ],
-    "9": [
-      "vite_config"
+    "12": [
+      "tests_e2e_app_spec"
     ]
   },
   "cohesion": {
-    "0": 0.14814814814814814,
-    "1": 0.08695652173913043,
-    "2": 0.09090909090909091,
-    "3": 0.23529411764705882,
-    "4": 0.3484848484848485,
-    "5": 0.38181818181818183,
-    "6": 1.0,
-    "7": 1.0,
+    "0": 0.1452991452991453,
+    "1": 0.08333333333333333,
+    "2": 0.08695652173913043,
+    "3": 0.2134387351778656,
+    "4": 0.225,
+    "5": 0.4,
+    "6": 0.5,
+    "7": 0.6666666666666666,
     "8": 1.0,
-    "9": 1.0
+    "9": 1.0,
+    "10": 1.0,
+    "11": 1.0,
+    "12": 1.0
   },
   "gods": [
     {
       "id": "src_main_render",
       "label": "render()",
-      "degree": 19
+      "degree": 23
     },
     {
       "id": "tsconfig_compileroptions",
@@ -164,6 +194,11 @@
     {
       "id": "src_main_bindworkbench",
       "label": "bindWorkbench()",
+      "degree": 12
+    },
+    {
+      "id": "src_main_showtoast",
+      "label": "showToast()",
       "degree": 11
     },
     {
@@ -172,51 +207,46 @@
       "degree": 9
     },
     {
-      "id": "src_main_showtoast",
-      "label": "showToast()",
+      "id": "src_main_resetdemo",
+      "label": "resetDemo()",
       "degree": 9
+    },
+    {
+      "id": "src_main_removeprompt",
+      "label": "removePrompt()",
+      "degree": 8
+    },
+    {
+      "id": "src_main_importjson",
+      "label": "importJson()",
+      "degree": 8
+    },
+    {
+      "id": "src_main_storagenamespace",
+      "label": "storageNamespace()",
+      "degree": 7
     },
     {
       "id": "src_main_renderworkbench",
       "label": "renderWorkbench()",
       "degree": 7
-    },
-    {
-      "id": "src_main_importjson",
-      "label": "importJson()",
-      "degree": 7
-    },
-    {
-      "id": "src_main_removeprompt",
-      "label": "removePrompt()",
-      "degree": 7
-    },
-    {
-      "id": "src_main_previewmarkup",
-      "label": "previewMarkup()",
-      "degree": 6
-    },
-    {
-      "id": "src_main_renderpractice",
-      "label": "renderPractice()",
-      "degree": 6
     }
   ],
   "surprises": [
     {
-      "source": "boot()",
-      "target": "loadAll()",
+      "source": "bindWorkbench()",
+      "target": "addBlank()",
       "source_files": [
         "src/main.ts",
-        "src/storage.ts"
+        "src/core.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
       "why": "bridges separate communities"
     },
     {
-      "source": "previewMarkup()",
-      "target": "sentenceParts()",
+      "source": "checkAnswer()",
+      "target": "answersMatch()",
       "source_files": [
         "src/main.ts",
         "src/core.ts"
@@ -237,7 +267,7 @@
       "why": "bridges separate communities"
     },
     {
-      "source": "renderPrint()",
+      "source": "removePrompt()",
       "target": "clozeText()",
       "source_files": [
         "src/main.ts",
@@ -248,8 +278,8 @@
       "why": "bridges separate communities"
     },
     {
-      "source": "bindWorkbench()",
-      "target": "addBlank()",
+      "source": "renderPrint()",
+      "target": "clozeText()",
       "source_files": [
         "src/main.ts",
         "src/core.ts"
