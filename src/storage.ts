@@ -1,11 +1,13 @@
 import type { Attempt, Backup, Prompt } from './core';
 
-const DB_NAME = 'context-cloze';
+export type StorageNamespace = 'real' | 'demo';
+
+const databaseName = (namespace: StorageNamespace) => `context-cloze-${namespace}`;
 const DB_VERSION = 1;
 
-function openDb(): Promise<IDBDatabase> {
+function openDb(namespace: StorageNamespace): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(databaseName(namespace), DB_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains('prompts')) db.createObjectStore('prompts', { keyPath: 'id' });
@@ -23,8 +25,8 @@ function requestResult<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
-export async function loadAll(): Promise<{ prompts: Prompt[]; attempts: Attempt[] }> {
-  const db = await openDb();
+export async function loadAll(namespace: StorageNamespace = 'real'): Promise<{ prompts: Prompt[]; attempts: Attempt[] }> {
+  const db = await openDb(namespace);
   const tx = db.transaction(['prompts', 'attempts'], 'readonly');
   const [prompts, attempts] = await Promise.all([
     requestResult(tx.objectStore('prompts').getAll() as IDBRequest<Prompt[]>),
@@ -37,16 +39,16 @@ export async function loadAll(): Promise<{ prompts: Prompt[]; attempts: Attempt[
   };
 }
 
-export async function putPrompt(prompt: Prompt): Promise<void> {
-  const db = await openDb();
+export async function putPrompt(prompt: Prompt, namespace: StorageNamespace = 'real'): Promise<void> {
+  const db = await openDb(namespace);
   const tx = db.transaction('prompts', 'readwrite');
   tx.objectStore('prompts').put(prompt);
   await transactionDone(tx);
   db.close();
 }
 
-export async function deletePrompt(id: string): Promise<void> {
-  const db = await openDb();
+export async function deletePrompt(id: string, namespace: StorageNamespace = 'real'): Promise<void> {
+  const db = await openDb(namespace);
   const tx = db.transaction(['prompts', 'attempts'], 'readwrite');
   tx.objectStore('prompts').delete(id);
   const attempts = await requestResult(tx.objectStore('attempts').getAll() as IDBRequest<Attempt[]>);
@@ -55,16 +57,16 @@ export async function deletePrompt(id: string): Promise<void> {
   db.close();
 }
 
-export async function putAttempt(attempt: Attempt): Promise<void> {
-  const db = await openDb();
+export async function putAttempt(attempt: Attempt, namespace: StorageNamespace = 'real'): Promise<void> {
+  const db = await openDb(namespace);
   const tx = db.transaction('attempts', 'readwrite');
   tx.objectStore('attempts').put(attempt);
   await transactionDone(tx);
   db.close();
 }
 
-export async function replaceBackup(backup: Backup): Promise<void> {
-  const db = await openDb();
+export async function replaceBackup(backup: Backup, namespace: StorageNamespace = 'real'): Promise<void> {
+  const db = await openDb(namespace);
   const tx = db.transaction(['prompts', 'attempts'], 'readwrite');
   const promptStore = tx.objectStore('prompts');
   const attemptStore = tx.objectStore('attempts');

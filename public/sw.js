@@ -1,4 +1,4 @@
-const CACHE_NAME = 'context-cloze-v1';
+const CACHE_NAME = 'context-cloze-__BUILD_ID__';
 const APP_SHELL = [
   '/',
   '/index.html',

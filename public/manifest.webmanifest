@@ -3,7 +3,7 @@
   "short_name": "Cloze",
   "description": "Private, typed sentence-retrieval practice.",
   "id": "/",
-  "start_url": "/?v=1#workbench",
+  "start_url": "/?v=__BUILD_ID__#workbench",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f2f0e8",

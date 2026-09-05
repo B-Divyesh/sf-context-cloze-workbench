@@ -13,7 +13,7 @@ import {
   type Direction,
   type Prompt
 } from './core';
-import { deletePrompt, loadAll, putAttempt, putPrompt, replaceBackup } from './storage';
+import { deletePrompt, loadAll, putAttempt, putPrompt, replaceBackup, type StorageNamespace } from './storage';
 
 type Route = 'workbench' | 'practice' | 'print' | 'privacy' | 'terms';
 
@@ -27,6 +27,29 @@ interface Draft {
 }
 
 const emptyDraft = (): Draft => ({ id: null, sentence: '', blanks: [], note: '', direction: 'auto', createdAt: null });
+const samplePrompt = (id: string, sentence: string, answer: string, note: string): Prompt => {
+  const start = sentence.indexOf(answer);
+  const createdAt = '2026-09-05T00:00:00.000Z';
+  return {
+    id,
+    sentence,
+    blanks: [{ start, end: start + answer.length, answer }],
+    note,
+    direction: 'auto',
+    createdAt,
+    updatedAt: createdAt
+  };
+};
+const SAMPLE_BACKUP: Backup = {
+  version: 1,
+  exportedAt: '2026-09-05T00:00:00.000Z',
+  prompts: [
+    samplePrompt('demo-field-notebook', 'A field notebook helps a gardener notice changes after rain.', 'field notebook', 'A written record of observations made outdoors.'),
+    samplePrompt('demo-thermometer', 'Before opening the greenhouse, Mira checked the thermometer.', 'thermometer', 'A tool that measures temperature.'),
+    samplePrompt('demo-infer', "Students infer a new word's meaning by comparing clues in the sentence.", 'infer', 'To reach an idea from evidence and context.')
+  ],
+  attempts: []
+};
 const app = document.querySelector<HTMLDivElement>('#app')!;
 let prompts: Prompt[] = [];
 let attempts: Attempt[] = [];
@@ -37,6 +60,7 @@ let practiceIndex = 0;
 let practiceChecked: { answers: string[]; correct: boolean } | null = null;
 let lastDeleted: Prompt | null = null;
 let storageError = '';
+let demoMode = location.pathname === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[character]!);
@@ -45,6 +69,17 @@ function escapeHtml(value: string): string {
 function currentRoute(): Route {
   const value = location.hash.slice(1).split('?')[0] ?? '';
   return ['practice', 'print', 'privacy', 'terms'].includes(value) ? value as Route : 'workbench';
+}
+
+function storageNamespace(): StorageNamespace {
+  return demoMode ? 'demo' : 'real';
+}
+
+function pageTitle(route: Route): string {
+  if (demoMode) return 'Demo — Context Cloze';
+  if (route === 'practice') return 'Practice vocabulary — Context Cloze';
+  if (route === 'print') return 'Print practice sheet — Context Cloze';
+  return 'Context Cloze — sentence retrieval practice';
 }
 
 function icon(name: 'leaf' | 'plus' | 'practice' | 'download' | 'print' | 'edit' | 'trash' | 'undo'): string {
@@ -67,25 +102,28 @@ function shell(content: string): string {
   return `
     <header class="masthead">
       <div class="brand-block">
-        <a href="#workbench" class="brand">CONTEXT<span>//</span>CLOZE</a>
+        <a href="/" class="brand">CONTEXT<span>//</span>CLOZE</a>
         <p>Typed retrieval from real sentences</p>
       </div>
       <nav aria-label="Primary">
-        <a href="#workbench" ${route === 'workbench' ? 'aria-current="page"' : ''}>Workbench <span class="count">${prompts.length}</span></a>
+        <a href="/" ${!demoMode && route === 'workbench' ? 'aria-current="page"' : ''}>Workbench <span class="count">${prompts.length}</span></a>
+        <a href="/demo" ${demoMode ? 'aria-current="page"' : ''}>Demo</a>
         <a href="#practice" ${route === 'practice' ? 'aria-current="page"' : ''}>Practice ${accuracy === null ? '' : `<span class="count">${accuracy}%</span>`}</a>
       </nav>
       <div class="connection" role="status"><span class="signal" aria-hidden="true"></span><span id="connection-text">${navigator.onLine ? 'Saved on this device' : 'Offline · work stays local'}</span></div>
     </header>
+    ${demoMode ? `<aside class="demo-banner" aria-label="Demo mode"><p><strong>Demo — sample data, nothing is saved</strong><span>Changes stay in this separate sample workspace.</span></p><div><button type="button" class="compact-button" id="reset-demo">Reset demo</button><button type="button" class="compact-button" id="start-for-real">Start for real</button></div></aside>` : ''}
     <main id="main" tabindex="-1">${content}</main>
     <footer>
-      <p><strong>Private by design.</strong> Your sentences stay in this browser.</p>
+      <p><strong>Context Cloze</strong> stores your sentence bank in this browser.</p>
       <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
       <p class="generated-note">Illustration generated for Context Cloze with the Param Factory image model.</p>
     </footer>
+    <div id="route-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>`;
 }
 
-function render(): void {
+function render(moveFocus = false): void {
   const route = currentRoute();
   const pages: Record<Route, () => string> = {
     workbench: renderWorkbench,
@@ -95,10 +133,18 @@ function render(): void {
     terms: renderTerms
   };
   app.innerHTML = shell(pages[route]());
+  document.title = pageTitle(route);
   bindGlobal();
   if (route === 'workbench') bindWorkbench();
   if (route === 'practice') bindPractice();
   if (route === 'print') document.querySelector<HTMLButtonElement>('#print-now')?.focus();
+  if (moveFocus) {
+    const heading = document.querySelector<HTMLElement>('main h1');
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus({ preventScroll: true });
+    const announcement = document.querySelector('#route-announcement');
+    if (announcement) announcement.textContent = heading?.textContent ?? 'Page changed';
+  }
 }
 
 function renderWorkbench(): string {
@@ -108,11 +154,16 @@ function renderWorkbench(): string {
   return `
     <section class="page-intro" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Local sentence bank / author mode</p>
-        <h1 id="page-title">Make the context do the teaching.</h1>
-        <p>Paste a sentence, select one or two meaningful words, then turn them into typed-recall prompts. No card syntax. No account.</p>
+        <p class="eyebrow">Sentence practice workbench</p>
+        <h1 id="page-title">Build vocabulary practice from real sentences.</h1>
+        <p class="page-summary">For vocabulary learners and teachers who need typed recall from meaningful sentence context.</p>
+        <div class="intro-actions"><button class="button primary" type="button" id="try-sample">Try it with sample data</button><a class="button secondary" href="#sentence" id="start-authoring">Start with your sentence</a></div>
+        <p class="action-help">The sample opens three ready-to-practice prompts in a separate workspace.</p>
+        <ul class="plain-facts"><li>Stored only in this browser</li><li>Works offline after the first visit</li><li>Free with no sign-in</li></ul>
       </div>
-      <div class="intro-stat" aria-label="Sentence bank count"><strong>${String(prompts.length).padStart(2, '0')}</strong><span>prompts<br>on this device</span></div>
+      ${demoMode && prompts[0]
+        ? `<article class="demo-intro-preview" aria-label="First sample prompt" dir="${prompts[0].direction}"><p class="stamped-label">Sample prompt</p><p class="cloze-sentence">${previewMarkup(prompts[0])}</p><p>${escapeHtml(prompts[0].note)}</p></article>`
+        : `<div class="intro-stat" aria-label="Sentence bank count"><strong>${String(prompts.length).padStart(2, '0')}</strong><span>prompts<br>on this device</span></div>`}
     </section>
     ${storageError ? `<div class="alert error" role="alert"><strong>Local storage is unavailable.</strong> ${escapeHtml(storageError)} You can still inspect the app, but new work may not persist.</div>` : ''}
     <div class="workbench-grid">
@@ -155,7 +206,7 @@ function renderWorkbench(): string {
         </form>
       </section>
       <section class="bank-panel" aria-labelledby="bank-title">
-        <div class="section-marker"><span>02</span><div><h2 id="bank-title">Sentence bank</h2><p>${prompts.length ? 'Reusable, editable, and only on this device.' : 'Your prompts will collect here.'}</p></div></div>
+        <div class="section-marker"><span>02</span><div><h2 id="bank-title">Sentence bank</h2><p>${demoMode ? 'Sample prompts in a separate demo workspace.' : prompts.length ? 'Reusable, editable, and only on this device.' : 'Your prompts will collect here.'}</p></div></div>
         ${prompts.length ? renderBankTools(visible) : renderEmptyState()}
       </section>
     </div>`;
@@ -170,7 +221,7 @@ function previewMarkup(value: Pick<Prompt, 'sentence' | 'blanks'>): string {
 function renderEmptyState(): string {
   return `<div class="empty-state">
     <img src="/assets/hero-concrete-moss.webp" srcset="/assets/hero-concrete-moss-384.webp 384w, /assets/hero-concrete-moss.webp 768w" sizes="(max-width: 680px) calc(100vw - 32px), 50vw" width="768" height="512" alt="Dark word blocks in a concrete groove, with living moss filling two missing spaces" decoding="async" fetchpriority="high">
-    <div><p class="stamped-label">The bench is clear</p><h3>Start with one useful sentence.</h3><p>Choose context that makes the missing word recoverable—enough meaning to think, not enough to guess blindly.</p><a href="#sentence" class="inline-link" id="start-authoring">Write the first prompt <span aria-hidden="true">↗</span></a></div>
+    <div><p class="stamped-label">No prompts yet</p><h3>Start with one useful sentence.</h3><p>Choose context that makes the missing word recoverable—enough meaning to think, not enough to guess blindly.</p><div class="empty-bank-actions"><a href="#sentence" class="inline-link" id="start-authoring">Write the first prompt <span aria-hidden="true">↗</span></a><label class="compact-button file-button">${icon('plus')} Import backup<input id="import-json" type="file" accept="application/json,.json"></label></div></div>
   </div>`;
 }
 
@@ -220,7 +271,7 @@ function renderPractice(): string {
       <div><p class="eyebrow">Practice mode / ${practiceIndex + 1} of ${practiceOrder.length}</p><h1 id="practice-title">Retrieve the missing ${prompt.blanks.length === 1 ? 'word' : 'words'}.</h1></div>
       <a class="close-practice" href="#workbench">Exit practice <span aria-hidden="true">×</span></a>
     </div>
-    <div class="progress-track" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>
+    <progress class="progress-track" aria-label="Practice progress" value="${progress}" max="100">${progress}%</progress>
     <article class="practice-sheet" dir="${prompt.direction}">
       <span class="stamped-label">Read the whole sentence</span>
       <p class="practice-sentence">${previewMarkup(prompt)}</p>
@@ -263,7 +314,7 @@ function renderPrint(): string {
 }
 
 function renderPrivacy(): string {
-  return legalPage('Privacy', 'Your words stay yours.', [
+  return legalPage('Privacy', 'How Context Cloze stores your data.', [
     ['What is stored', 'Sentences, blank answers, notes, and practice results are stored in IndexedDB inside this browser.'],
     ['What is sent', 'Nothing. Context Cloze has no account, analytics, advertising, remote database, or third-party runtime scripts.'],
     ['Your control', 'Use Backup to export a portable JSON copy, CSV for a spreadsheet, or your browser’s site-data controls to erase all local data. Uninstalling or clearing this site’s storage removes the bank from this device.']
@@ -271,7 +322,7 @@ function renderPrivacy(): string {
 }
 
 function renderTerms(): string {
-  return legalPage('Terms', 'A small tool with plain terms.', [
+  return legalPage('Terms', 'Terms for using Context Cloze.', [
     ['Use', 'Context Cloze is provided free of charge for personal and classroom sentence-retrieval practice. You are responsible for having the right to use the sentences you enter.'],
     ['No warranty', 'The tool is provided as-is. Keep a JSON backup if your sentence bank matters to you; browser storage can be cleared by the device owner or browser.'],
     ['Content', 'The app includes no sentence corpus and does not publish your prompts. Do not rely on answer matching as a substitute for a teacher’s judgment.']
@@ -286,7 +337,22 @@ function bindGlobal(): void {
   window.addEventListener('online', updateConnection, { once: true });
   window.addEventListener('offline', updateConnection, { once: true });
   document.querySelector('#print-now')?.addEventListener('click', () => window.print());
+  document.querySelector('#reset-demo')?.addEventListener('click', () => { void resetDemo(); });
+  document.querySelector('#start-for-real')?.addEventListener('click', () => { void startForReal(); });
 }
+
+document.querySelector<HTMLAnchorElement>('.skip-link')?.addEventListener('click', () => {
+  let tries = 0;
+  const focusMain = () => {
+    const main = document.querySelector<HTMLElement>('#main');
+    if (main) {
+      main.focus();
+    } else if (tries++ < 10) {
+      setTimeout(focusMain, 20);
+    }
+  };
+  setTimeout(focusMain, 0);
+});
 
 function updateConnection(): void {
   const label = document.querySelector('#connection-text');
@@ -337,6 +403,7 @@ function bindWorkbench(): void {
   });
   document.querySelector('#cancel-edit')?.addEventListener('click', () => { draft = emptyDraft(); render(); });
   document.querySelector('#start-authoring')?.addEventListener('click', () => setTimeout(() => sentence.focus(), 0));
+  document.querySelector('#try-sample')?.addEventListener('click', () => { void enterDemo(); });
   document.querySelector<HTMLInputElement>('#search')?.addEventListener('input', (event) => {
     filter = (event.target as HTMLInputElement).value;
     const cursor = filter.length;
@@ -368,7 +435,7 @@ async function saveDraft(event: SubmitEvent): Promise<void> {
   };
   const wasEditing = Boolean(draft.id);
   try {
-    await putPrompt(prompt);
+    await putPrompt(prompt, storageNamespace());
     prompts = [prompt, ...prompts.filter((item) => item.id !== prompt.id)];
     draft = emptyDraft();
     render();
@@ -391,7 +458,7 @@ async function removePrompt(id: string): Promise<void> {
   const prompt = prompts.find((item) => item.id === id);
   if (!prompt || !confirm(`Delete this prompt?\n\n${clozeText(prompt)}\n\nIts practice history will also be removed.`)) return;
   try {
-    await deletePrompt(id);
+    await deletePrompt(id, storageNamespace());
     lastDeleted = prompt;
     prompts = prompts.filter((item) => item.id !== id);
     attempts = attempts.filter((attempt) => attempt.promptId !== id);
@@ -402,7 +469,7 @@ async function removePrompt(id: string): Promise<void> {
 
 async function undoDelete(): Promise<void> {
   if (!lastDeleted) return;
-  await putPrompt(lastDeleted);
+  await putPrompt(lastDeleted, storageNamespace());
   prompts = [lastDeleted, ...prompts];
   lastDeleted = null;
   render();
@@ -433,7 +500,7 @@ async function checkAnswer(event: SubmitEvent): Promise<void> {
   const answers = prompt.blanks.map((_, index) => String(data.get(`answer-${index}`) ?? ''));
   const correct = prompt.blanks.every((blank, index) => answersMatch(blank.answer, answers[index] ?? ''));
   const attempt: Attempt = { id: crypto.randomUUID(), promptId: prompt.id, answers, correct, createdAt: new Date().toISOString() };
-  try { await putAttempt(attempt); attempts.push(attempt); } catch { /* Practice remains usable if storage is blocked. */ }
+  try { await putAttempt(attempt, storageNamespace()); attempts.push(attempt); } catch { /* Practice remains usable if storage is blocked. */ }
   practiceChecked = { answers, correct };
   render();
   document.querySelector('.feedback')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -466,10 +533,15 @@ async function importJson(event: Event): Promise<void> {
   const file = input.files?.[0];
   if (!file) return;
   try {
-    const candidate: unknown = JSON.parse(await file.text());
-    if (!isBackup(candidate)) throw new Error('This file is not a valid Context Cloze backup.');
+    let candidate: unknown;
+    try {
+      candidate = JSON.parse(await file.text());
+    } catch {
+      throw new Error('This file is not valid JSON. Choose a Context Cloze backup JSON file and try again.');
+    }
+    if (!isBackup(candidate)) throw new Error('Choose a Context Cloze backup JSON file with prompts and practice results.');
     if (!confirm(`Replace this device’s bank with ${candidate.prompts.length} imported prompts?`)) return;
-    await replaceBackup(candidate);
+    await replaceBackup(candidate, storageNamespace());
     prompts = candidate.prompts;
     attempts = candidate.attempts;
     draft = emptyDraft();
@@ -495,13 +567,88 @@ function showToast(message: string, action?: string, handler?: () => void): void
   setTimeout(() => { if (region.isConnected) region.innerHTML = ''; }, 6000);
 }
 
-window.addEventListener('hashchange', () => { practiceChecked = null; render(); });
+async function loadWorkspace(): Promise<void> {
+  ({ prompts, attempts } = await loadAll(storageNamespace()));
+}
+
+async function resetDemo(announce = true): Promise<void> {
+  await replaceBackup(structuredClone(SAMPLE_BACKUP), 'demo');
+  await loadWorkspace();
+  draft = emptyDraft();
+  practiceOrder = [];
+  practiceIndex = 0;
+  practiceChecked = null;
+  render();
+  if (announce) showToast('Demo reset to three sample prompts.');
+}
+
+async function enterDemo(): Promise<void> {
+  if (!demoMode) {
+    history.pushState({ demo: true }, '', '/demo');
+    demoMode = true;
+  }
+  try {
+    await loadWorkspace();
+    if (!prompts.length) await resetDemo(false);
+    else render(true);
+  } catch (cause) {
+    storageError = cause instanceof Error ? cause.message : 'The sample workspace could not open.';
+    render(true);
+  }
+}
+
+async function startForReal(): Promise<void> {
+  try {
+    await replaceBackup({ version: 1, exportedAt: new Date().toISOString(), prompts: [], attempts: [] }, 'demo');
+    demoMode = false;
+    history.pushState({}, '', '/');
+    await loadWorkspace();
+    draft = emptyDraft();
+    practiceOrder = [];
+    practiceIndex = 0;
+    practiceChecked = null;
+    render(true);
+    showToast('You are using your own empty sentence bank.');
+  } catch (cause) {
+    storageError = cause instanceof Error ? cause.message : 'Could not open your sentence bank.';
+    render(true);
+  }
+}
+
+window.addEventListener('hashchange', () => {
+  if (location.hash === '#main') return;
+  practiceChecked = null;
+  render(true);
+});
+window.addEventListener('popstate', () => {
+  const shouldUseDemo = location.pathname === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
+  if (shouldUseDemo !== demoMode) {
+    demoMode = shouldUseDemo;
+    if (demoMode) {
+      void enterDemo();
+    } else {
+      void loadWorkspace().then(() => {
+        draft = emptyDraft();
+        practiceOrder = [];
+        practiceIndex = 0;
+        practiceChecked = null;
+        render(true);
+      }).catch((cause) => {
+        storageError = cause instanceof Error ? cause.message : 'Could not open your sentence bank.';
+        render(true);
+      });
+    }
+    return;
+  }
+  render(true);
+});
 window.addEventListener('online', updateConnection);
 window.addEventListener('offline', updateConnection);
 
 async function boot(): Promise<void> {
   try {
-    ({ prompts, attempts } = await loadAll());
+    await loadWorkspace();
+    if (demoMode && !prompts.length) await resetDemo(false);
   } catch (cause) {
     storageError = cause instanceof Error ? cause.message : 'The browser refused access to local storage.';
   }

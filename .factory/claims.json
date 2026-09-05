@@ -1,0 +1,58 @@
+[
+  {
+    "id": "demo-sandbox",
+    "claim": "Loads three sample prompts in a separate demo workspace",
+    "where": "Landing page and /demo",
+    "test": "npm run test:e2e -- --grep @claim:demo-sandbox",
+    "sandbox": "Fresh browser context; create one real prompt, enter /demo, reset it, then return to the real bank."
+  },
+  {
+    "id": "author-practice",
+    "claim": "Creates and checks typed prompts from selected sentence text",
+    "where": "Landing page and README",
+    "test": "npm run test:e2e -- --grep @claim:author-practice",
+    "sandbox": "Fresh browser context; mark a selected word, save the prompt, reload, and answer it in Practice."
+  },
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit",
+    "where": "Landing page and README",
+    "test": "npm run test:e2e -- --grep @claim:offline-reload",
+    "sandbox": "Dedicated browser context; open /demo, wait for the service worker, reload, set offline, and reload again."
+  },
+  {
+    "id": "csv-export",
+    "claim": "Exports the sentence bank as CSV",
+    "where": "Sentence-bank toolbar and README",
+    "test": "npm run test:e2e -- --grep @claim:csv-export",
+    "sandbox": "Fresh browser context at /demo; download CSV and assert its header plus one row per sample prompt."
+  },
+  {
+    "id": "json-backup",
+    "claim": "Exports and restores a JSON sentence-bank backup",
+    "where": "Sentence-bank toolbar and README",
+    "test": "npm run test:e2e -- --grep @claim:json-backup",
+    "sandbox": "Fresh browser context at /demo; download Backup, leave the demo, import it into an empty real bank, and observe all sample prompts."
+  },
+  {
+    "id": "print-sheet",
+    "claim": "Shows a printable practice sheet and answer key",
+    "where": "Sentence-bank toolbar and README",
+    "test": "npm run test:e2e -- --grep @claim:print-sheet",
+    "sandbox": "Fresh browser context at /demo; open Print and assert the worksheet plus answer key are shown."
+  },
+  {
+    "id": "local-data",
+    "claim": "Keeps sentence and practice data on this device with no sign-in",
+    "where": "Landing page, footer, Privacy page, and README",
+    "test": "npm run test:e2e -- --grep @claim:local-data",
+    "sandbox": "Fresh browser context at /demo; complete a practice answer while recording requests, then assert every request is same-origin and no sign-in field appears."
+  },
+  {
+    "id": "free-core",
+    "claim": "Lets visitors use sample practice free with no sign-in",
+    "where": "Landing page and Terms page",
+    "test": "npm run test:e2e -- --grep @claim:free-core",
+    "sandbox": "Fresh browser context at /demo; complete a checked practice prompt and assert that no payment field or checkout is present."
+  }
+]
