@@ -1,48 +1,56 @@
-# Context Cloze handoff — **FAIL (independent verification 2026-08-28)**
+# Context Cloze handoff — PASS
 
-## Release status
+## Release
 
-**FAIL — do not release commit `770da5a2c9ca66d50727154ea2e078ec0fa8fa1b` as verified at https://context-cloze-workbench.sociobot.in/.** The independent report is [`.factory/verification.md`](verification.md).
+The deployed implementation is `eb4cac63ad3dcfb783d9eb4385baa5ea6c86aa6f` (`fix: declare PWA manifest MIME type`). Its functional repair commit is `0e70d2bdd4e9721036341ccb2fd6e74430329769` (`fix: add isolated demo and release-safe PWA`). The live product is https://context-cloze-workbench.sociobot.in.
 
-Release blockers: the clean clone has no required `.factory/claims.json`, so mandated claim tests cannot run; and the cold first screen has no one-click “try it with sample data” demo. The verifier also found an unversioned PWA cache/update path and non-immutable production asset caching. Existing builder checks below are historical evidence only and do not override this FAIL.
+Context Cloze is for vocabulary learners and teachers who need typed recall from meaningful sentences. The first action is **Try it with sample data**.
 
-## Shipped
+## What changed
 
-Context Cloze v1 is a finished static, offline-first PWA for building and practicing context-rich typed vocabulary prompts. Authors can paste any Unicode sentence, select one or two non-overlapping blanks without markup, attach a note, set automatic/LTR/RTL direction, edit and search a durable local bank, and confirm or undo deletion. Learners get a shuffled prompt session, one input per blank, normalized case/punctuation-aware checking, answer comparison, persisted attempts, and recent accuracy.
+- Added `/demo` and the first-screen **Try it with sample data** action. It seeds three original sample prompts in `context-cloze-demo` IndexedDB, separate from the `context-cloze-real` bank. The persistent banner, **Reset demo**, and **Start for real** are live.
+- Added the required `.factory/claims.json`, eight outcome-based browser claims, and `.factory/demo.md`. Every claim runs from a clean browser context through the real demo URL.
+- Added an empty-bank **Import backup** action, so a backup can restore into a fresh real bank. Invalid JSON now says to choose a valid Context Cloze backup JSON file instead of showing a parser exception.
+- Versioned service-worker cache namespaces and the manifest start URL from the release SHA. The build regression test proves two release IDs emit different cache namespaces.
+- Added `staticwebapp.config.json` to the generated `dist/`: immutable caching for hashed assets, no-cache service worker and manifest, CSP, Permissions-Policy, manifest MIME mapping, `/demo` rewrite, and a designed 404 response.
+- Added route metadata, social image, standard legal-page navigation, skip-link focus behavior, route titles, and a responsive social crop from the existing original product art.
+- Recorded the plain-words audit and a verb-first catalog description. The catalog description was copied to `/work/.evidence/catalog-description.txt`.
 
-The bank supports CSV export, complete JSON backup/import, and a printable learner sheet plus answer key. Empty, no-results, validation, storage-error, offline, correct/incorrect, update-available, and practice-complete states are implemented. Data stays in IndexedDB; there is no backend, telemetry, account, or third-party runtime request. Privacy and terms are available at `/privacy/` and `/terms/`.
-
-The custom brutalist concrete-and-moss visual system is documented in `.factory/design.md`. Its original generated empty-state illustration was reviewed for text, brand, anatomy, and seam artifacts; source prompt/provenance live in `assets/src/`, and the shipped responsive WebP files are 68 KB and 12 KB.
-
-## Run and deploy
+## Run and verify
 
 ```bash
-npm install
+npm ci
 npm test
 npm run build
 npm run test:e2e
 ```
 
-The work-order build command is exactly `npm run build`. Static output lands in `dist/`, with `dist/index.html` at its root. Deploy only `dist/`; HTTPS is required for installed service workers outside localhost.
+Run every declared claim command printed by:
 
-## Verification — 2026-08-28
+```bash
+node -e "for (const claim of require('./.factory/claims.json')) console.log(claim.test)"
+```
 
-- `npm test`: 7/7 Vitest tests passed.
-- `npm run build`: passed with TypeScript strict checks; Vite 7.3.6 emitted `dist/`.
-- Production bundle: 26.58 KB JS / 9.41 KB gzip; 18.01 KB CSS / 4.65 KB gzip; no webfont payload; initial Lighthouse transfer 85 KiB.
-- `npm run test:e2e`: 6/6 Playwright tests passed across desktop Chromium and a 390 × 844 Chromium mobile viewport. Covered authoring by textarea selection, IndexedDB persistence after reload, typed practice, serious/critical axe scan, and explicit `context.setOffline(true)` reload.
-- `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ …`: HTTP 200; title and `lang="en"`; exactly one `<h1>`; `<main>` present; zero missing image alt attributes; zero unlabeled buttons; zero page/console errors.
-- Lighthouse 12.8.2, simulated mobile against the production preview: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.7 s, CLS 0, TBT 0 ms. INP is not produced for a no-interaction lab run; the Playwright author/practice flow supplies the interaction smoke test.
-- `npm audit --audit-level=high`: zero vulnerabilities.
-- Manual visual review completed at 1500 px desktop and 390 px mobile. Focus styling, 44 px controls, print pagination, reduced motion, and visible offline state are encoded in CSS.
+## Verification performed
 
-## Known boundaries
+- Clean setup: `npm ci` passed with zero high-severity audit findings.
+- Unit/release tests: `npm test` passed, 8 tests. This includes the release-output cache-version regression.
+- Build: `npm run build` passed. Final emitted JS is 30.91 KB (10.70 KB gzip); CSS is 19.74 KB (4.95 KB gzip); initial Lighthouse transfer was 124,872 bytes.
+- Browser suite: `npm run test:e2e` passed, 22 tests across desktop Chromium and 390 × 844 Chromium mobile. It covers authoring, persistence, practice, demo isolation/reset/exit, CSV, JSON restore into an empty bank, print, invalid import recovery, keyboard skip focus, populated-practice axe scan, privacy requests, and offline reload.
+- Every one of the eight documented claim commands passed after the final implementation build.
+- Accessibility: Playwright axe integration found no serious or critical issues on the empty workbench and populated demo practice. The URL checker found one title, `lang=en`, one h1, a main landmark, labelled controls, image alt text, and no console errors. `@axe-core/cli` could not run in this worker because its bundled ChromeDriver only supports Chrome 152 while the supplied browser is Chrome 145; the Playwright axe integration is the applicable substitute.
+- Static Web Apps local runtime confirmed CSP and Permissions-Policy, immutable hashed-asset caching, no-cache `/sw.js`, manifest MIME type, `/demo`, and the designed HTTP 404.
+- Lighthouse 12.8.2 against that runtime: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.65 s, CLS 0, TBT 0 ms.
+- Live HTTPS after deployment: `verify-url.sh` passed without console errors. Live `index.html`, JS, CSS, service worker, and manifest match `dist` byte-for-byte. The manifest is `application/manifest+json`; hashed JS is `public, max-age=31536000, immutable`; the designed unknown route returns HTTP 404.
+- Fresh live desktop and phone contexts confirmed the exact job, audience, and first action before scrolling. The demo shows its banner, visible sample preview, and three prompts; reset retains three sample prompts; Start for real returns to an empty real bank. The phone layout is 390 px wide with no horizontal overflow. A separate fresh live context reloaded `/demo` offline after service-worker activation and showed both the demo banner and offline label.
 
-- Answer checking intentionally allows case differences, surrounding punctuation, and repeated whitespace, but otherwise expects the authored answer. There are no synonym lists or fuzzy/AI grading.
-- Data is per-browser and per-origin. JSON backup/import is the portability path; automatic multi-device sync is intentionally absent to preserve privacy and offline use.
-- No copyrighted sentence corpus or prompt generation is bundled. Users must provide sentences they have the right to use.
-- Browser storage can be removed by browser/device cleanup. The UI and terms direct users to make JSON backups for important banks.
+## Earlier verification disposition
 
-## Next steps
+The 2026-08-28 FAIL report remains historical evidence. Its claims-file, one-click demo, fixed-cache, non-immutable-cache, raw-import-error, missing-header, manifest-MIME, and first-read audience findings are all repaired and evidenced above. The byte-match identity check now applies to implementation `eb4cac6`, not the old `770da5a` candidate.
 
-After pilot use, measure whether authors reach 20 prompts and return after seven days using consented, aggregate research outside this no-analytics app. If exact matching proves too strict, add author-defined accepted alternatives before considering any fuzzy grading.
+## Boundaries and next steps
+
+- The brief is free. There is no paid offer, checkout, billing registration, backend, account, or external provider dependency.
+- Data remains per browser and origin. JSON backup is the portability path; clearing site data removes the bank.
+- Exact answer checking accepts case, surrounding punctuation, and repeated whitespace. It does not accept synonyms or grade essays.
+- The pre-existing untracked `graphify-out/` changes were preserved and were not included in product commits.

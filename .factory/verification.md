@@ -64,3 +64,17 @@ Then inspect the live site in a fresh browser profile, exercise authoring/practi
 3. Generate a distinct service-worker cache version on each release/build and verify that a deployed update exposes the update toast and activates safely.
 4. Configure immutable long-lived caching for hashed assets; add CSP/Permissions-Policy and correct manifest MIME type at deployment.
 5. Replace raw import parser errors with a helpful validation message and retest the release gates.
+
+## Repair addendum — PASS, 2026-09-05
+
+This original report remains the independent result for `770da5a`. Repair implementation `eb4cac63ad3dcfb783d9eb4385baa5ea6c86aa6f` is deployed at the same URL and was rechecked by the repairer.
+
+| Original finding | Current disposition | Current evidence |
+| --- | --- | --- |
+| Missing `.factory/claims.json` | Fixed | Eight claims are present; every documented `npm run test:e2e -- --grep @claim:…` command passed from clean setup. |
+| No one-click sample demo / unclear first read | Fixed | Landing has the required action, clear job/audience copy, `/demo`, persistent banner, reset/start-real controls, visible sample preview, and three prompts in a separate IndexedDB namespace. |
+| Fixed service-worker cache | Fixed | Build emits a cache namespace and manifest version from the release SHA; a regression test builds two release IDs and observes different cache namespaces. |
+| Hashed assets not immutable | Fixed | Live hashed JS returns `Cache-Control: public, max-age=31536000, immutable`. |
+| Raw JSON parser error | Fixed | Invalid import now tells the person to choose a valid Context Cloze backup JSON file; browser coverage verifies it. |
+| Missing CSP / Permissions-Policy | Fixed | Both headers are live through `staticwebapp.config.json`; the live console is clean. |
+| Manifest sent as octet-stream | Fixed | Live manifest returns `application/manifest+json` through the Static Web Apps `mimeTypes` mapping. |
