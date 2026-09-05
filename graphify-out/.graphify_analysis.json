@@ -182,30 +182,41 @@
       "degree": 7
     },
     {
-      "id": "src_main_removeprompt",
-      "label": "removePrompt()",
-      "degree": 7
-    },
-    {
       "id": "src_main_importjson",
       "label": "importJson()",
       "degree": 7
     },
     {
-      "id": "package_scripts",
-      "label": "scripts",
+      "id": "src_main_removeprompt",
+      "label": "removePrompt()",
+      "degree": 7
+    },
+    {
+      "id": "src_main_previewmarkup",
+      "label": "previewMarkup()",
       "degree": 6
     },
     {
-      "id": "src_core_answersmatch",
-      "label": "answersMatch()",
+      "id": "src_main_renderpractice",
+      "label": "renderPractice()",
       "degree": 6
     }
   ],
   "surprises": [
     {
-      "source": "checkAnswer()",
-      "target": "answersMatch()",
+      "source": "boot()",
+      "target": "loadAll()",
+      "source_files": [
+        "src/main.ts",
+        "src/storage.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "previewMarkup()",
+      "target": "sentenceParts()",
       "source_files": [
         "src/main.ts",
         "src/core.ts"
@@ -226,30 +237,19 @@
       "why": "bridges separate communities"
     },
     {
+      "source": "renderPrint()",
+      "target": "clozeText()",
+      "source_files": [
+        "src/main.ts",
+        "src/core.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
       "source": "bindWorkbench()",
       "target": "addBlank()",
-      "source_files": [
-        "src/main.ts",
-        "src/core.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "bridges separate communities"
-    },
-    {
-      "source": "previewMarkup()",
-      "target": "sentenceParts()",
-      "source_files": [
-        "src/main.ts",
-        "src/core.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "bridges separate communities"
-    },
-    {
-      "source": "removePrompt()",
-      "target": "clozeText()",
       "source_files": [
         "src/main.ts",
         "src/core.ts"
